@@ -39,7 +39,7 @@ class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunne
 
   abstract class ServerWithConfig(conf: Map[String, String] = Map.empty) extends WithServer()
 
-  "The switch language endpoint" should {
+  "The languageController endpoint " should {
 
     "return with 200 for getpartial. " in
       new ServerWithConfig() {
@@ -47,5 +47,31 @@ class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunne
         val res = mockLanguageController.getPartial(lang).apply(FakeRequest())
         status(res) should be (OK)
       }
+
+    "get language should be eng" in {
+      val res = mockLanguageController.getLang().apply(FakeRequest())
+      status(res) should be(OK)
+      cookies(res).get(hmrcLang) match {
+        case Some(c: Cookie) => c.value should be(EnglishLangCode)
+        case _ => fail("HMRC_LANG cookie was not found.")
+      }
+    }
+
+      "set language to Welsh" in {
+        val res = mockLanguageController.setLang("wel").apply(FakeRequest())
+        status(res) should be(OK)
+        cookies(res).get(hmrcLang) match {
+          case Some(c: Cookie) => c.value should be(WelshLangCode)
+          case _ => fail("HMRC_LANG cookie was not found.")
+        }
+      }
+        "set language to Eng" in {
+          val res = mockLanguageController.setLang("eng").apply(FakeRequest())
+          status(res) should be (OK)
+          cookies(res).get(hmrcLang) match {
+            case Some(c: Cookie) => c.value should be (EnglishLangCode)
+            case _ => fail("HMRC_LANG cookie was not found.")
+          }
+    }
   }
 }

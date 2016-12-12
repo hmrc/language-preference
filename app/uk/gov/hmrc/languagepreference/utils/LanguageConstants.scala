@@ -35,8 +35,29 @@ import play.api.mvc._
   */
 object LanguageConstants  {
 
+  val hmrcLang = "HMRC_LANG"
   val EnglishLangCode = "en-GB"
   val WelshLangCode   = "cy-GB"
+
+  /*val hmrcLangCookie = Cookie(hmrcLang, //name
+    EnglishLangCode, //value
+    None, //maxAge
+    "/", //path
+    None, //domain: Option[String]
+    false,     //secure:  Boolean = false
+    true ) //httpOnly: Boolean = true*/
+
+  def setCookie(code:String) = Cookie(hmrcLang, //name
+    code.startsWith("en") match {
+      case true => EnglishLangCode
+      case _ => WelshLangCode
+    } , //value
+    None, //maxAge
+    "/", //path
+    None, //domain: Option[String]
+    false,     //secure:  Boolean = false
+    true ) //httpOnly: Boolean = true
+
 
   val English = Lang(EnglishLangCode)
   val Welsh   = Lang(WelshLangCode)

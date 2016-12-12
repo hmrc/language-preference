@@ -20,6 +20,7 @@ import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.{I18nSupport, Lang, MessagesApi}
 import play.api.mvc._
+import play.mvc.Http
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -39,7 +40,6 @@ import javax.inject.Singleton
 
 trait LanguageController extends FrontendController with ServicesConfig {
 
-  import play.api.Play.current
 
   def getPartial(language: String) = Action { implicit request =>
     val lang = Lang(language)
@@ -48,6 +48,22 @@ trait LanguageController extends FrontendController with ServicesConfig {
     Ok(uk.gov.hmrc.languagepreference.views.html.language_selection(lang, welshSwitchUrl, englishSwitchUrl))
   }
 
+  def getLang = Action {
+    implicit  request =>
+    // option 1
+      //failure condition ??
+    request.cookies.get(hmrcLang) match
+      {
+        case Some(cookie:Cookie) => Ok("Lang Cookie present").withCookies(cookie)
+        case _ => Ok("Lang Cookie added").withCookies(setCookie("en"))
+
+      }
+  }
+
+  def setLang(langToSet:String) = Action {
+            // option 1
+        Ok("Lang Cookie set").withCookies(setCookie(langToSet))
+  }
 }
 
 object LanguageController extends LanguageController
