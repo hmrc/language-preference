@@ -26,7 +26,7 @@ import play.api.libs.ws.WS
 import play.api.mvc.Cookie
 import play.api.test._
 import play.api.test.Helpers._
-import play.test.WithServer
+import play.test.{WithApplication, WithServer}
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
 
 class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunners with ScalaFutures with DefaultAwaitTimeout with IntegrationPatience with OneAppPerSuite {
@@ -43,8 +43,8 @@ class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunne
 
     "return with 200 for getpartial. " in
       new ServerWithConfig() {
-        val lang: String = "en-GB"
-        val res = mockLanguageController.getPartial(lang).apply(FakeRequest())
+        val res = mockLanguageController.getPartial().apply(FakeRequest())
+        //contentAsString(res) should contain("language-preference/setlang/?lang=cy-GB")
         status(res) should be (OK)
       }
 
@@ -52,13 +52,13 @@ class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunne
       val res = mockLanguageController.getLang().apply(FakeRequest())
       status(res) should be(OK)
       cookies(res).get(hmrcLang) match {
-        case Some(c: Cookie) => c.value should be(EnglishLangCode)
+        case Some(c: Cookie) => c.value should be(EngLangCode)
         case _ => fail("HMRC_LANG cookie was not found.")
       }
     }
 
       "set language to Welsh" in {
-        val res = mockLanguageController.setLang("wel").apply(FakeRequest())
+        val res = mockLanguageController.setLang("cy-GB").apply(FakeRequest())
         status(res) should be(OK)
         cookies(res).get(hmrcLang) match {
           case Some(c: Cookie) => c.value should be(WelshLangCode)
@@ -66,10 +66,10 @@ class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunne
         }
       }
         "set language to Eng" in {
-          val res = mockLanguageController.setLang("eng").apply(FakeRequest())
+          val res = mockLanguageController.setLang("en-GB").apply(FakeRequest())
           status(res) should be (OK)
           cookies(res).get(hmrcLang) match {
-            case Some(c: Cookie) => c.value should be (EnglishLangCode)
+            case Some(c: Cookie) => c.value should be (EngLangCode)
             case _ => fail("HMRC_LANG cookie was not found.")
           }
     }
