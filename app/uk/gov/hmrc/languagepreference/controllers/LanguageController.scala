@@ -16,17 +16,12 @@
 
 package uk.gov.hmrc.languagepreference.controllers
 
-import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.{I18nSupport, Lang, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
   * LanguageController that switches the language of the current web application.
@@ -39,15 +34,32 @@ import javax.inject.Singleton
 
 trait LanguageController extends FrontendController with ServicesConfig {
 
-  import play.api.Play.current
 
-  def getPartial(language: String) = Action { implicit request =>
-    val lang = Lang(language)
-    val englishSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.SwitchController.switchToEnglish().url
-    val  welshSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.SwitchController.switchToWelsh().url
-    Ok(uk.gov.hmrc.languagepreference.views.html.language_selection(lang, welshSwitchUrl, englishSwitchUrl))
+  def getPartial() = Action { implicit request =>
+    val englishSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(EngLangCode).url
+    val  welshSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(WelshLangCode).url
+    Ok(uk.gov.hmrc.languagepreference.views.html.language_selection( welshSwitchUrl, englishSwitchUrl))
   }
 
+  def getLang = Action {
+    implicit  request =>
+    // option 1
+    request.cookies.get(hmrcLang) match
+      {
+        case Some(cookie:Cookie) => Ok(cookie.value)
+        //failure condition ??
+        case _ => Ok(EngLangCode).withCookies(setCookie(EngLangCode))
+      }
+  }
+
+  def setLang(langToSet:String) = Action {
+            // option 1
+    val cookie = langToSet match {
+      case WelshLangCode => setCookie(langToSet)
+      case _ => setCookie(EngLangCode)
+    }
+        Ok(cookie.value).withCookies(cookie)
+  }
 }
 
 object LanguageController extends LanguageController

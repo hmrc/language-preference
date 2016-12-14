@@ -1,13 +1,10 @@
 @import uk.gov.hmrc.urls.Link
 
-@(language: Lang, welshUrl: String, englishUrl: String, customClass: Option[String] = None)(implicit request: Request[_], messages: Messages)
+@( welshUrl: String, englishUrl: String, customClass: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
 <p class="@if(customClass.isDefined) {@customClass.get}">
-    @if(language.code == "cy-GB"){
-<p>@Link.toInternalPage(url = englishUrl,
-    value = Some("This page is also available in English")).toHtml</p>
-} else {
 <p>@Link.toInternalPage(url = welshUrl,
+    value = Some("This page is also available in English")).toHtml</p>
+<p>@Link.toInternalPage(url = englishUrl,
     value = Some("This page is also available in Welsh (Cymraeg)")).toHtml</p>
-}
-</p>
+
