@@ -19,14 +19,10 @@ package uk.gov.hmrc.languagepreference.controllers
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{ShouldMatchers, WordSpec}
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.Play
-import play.api.Play._
-import play.api.i18n.Lang
-import play.api.libs.ws.WS
 import play.api.mvc.Cookie
 import play.api.test._
 import play.api.test.Helpers._
-import play.test.{WithApplication, WithServer}
+import play.test.WithServer
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
 
 class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunners with ScalaFutures with DefaultAwaitTimeout with IntegrationPatience with OneAppPerSuite {

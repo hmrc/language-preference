@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.languagepreference.controllers
 
+import play.api.Logger
 import play.api.mvc._
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -35,9 +36,11 @@ import play.api.Play.current
 trait LanguageController extends FrontendController with ServicesConfig {
 
 
-  def getPartial() = Action { implicit request =>
-    val englishSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(EngLangCode).url
-    val  welshSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(WelshLangCode).url
+  def getPartial() = Action { implicit request => getLang
+    Logger.debug("Lang Set partial invoked")
+    val englishSwitchUrl = baseUrl(baseurl) + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(EngLangCode).url
+    val  welshSwitchUrl = baseUrl(baseurl) + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(WelshLangCode).url
+    Logger.debug("Partial created")
     Ok(uk.gov.hmrc.languagepreference.views.html.language_selection( welshSwitchUrl, englishSwitchUrl))
   }
 
