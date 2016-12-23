@@ -45,7 +45,7 @@ class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunne
       }
 
     "get language should be eng" in {
-      val res = mockLanguageController.getLang().apply(FakeRequest())
+      val res = mockLanguageController.getLang().apply(FakeRequest().withHeaders((REFERER, "/localhost/test/go")))
       status(res) should be(OK)
       cookies(res).get(hmrcLang) match {
         case Some(c: Cookie) => c.value should be(EngLangCode)
@@ -54,16 +54,16 @@ class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunne
     }
 
       "set language to Welsh" in {
-        val res = mockLanguageController.setLang("cy-GB").apply(FakeRequest())
-        status(res) should be(OK)
+        val res = mockLanguageController.setLang("cy-GB").apply(FakeRequest().withHeaders((REFERER, "/localhost/test/go")))
+        status(res) should be(303)
         cookies(res).get(hmrcLang) match {
           case Some(c: Cookie) => c.value should be(WelshLangCode)
           case _ => fail("HMRC_LANG cookie was not found.")
         }
       }
         "set language to Eng" in {
-          val res = mockLanguageController.setLang("en-GB").apply(FakeRequest())
-          status(res) should be (OK)
+          val res = mockLanguageController.setLang("en-GB").apply(FakeRequest().withHeaders((REFERER, "/localhost/test/go")))
+          status(res) should be (303)
           cookies(res).get(hmrcLang) match {
             case Some(c: Cookie) => c.value should be (EngLangCode)
             case _ => fail("HMRC_LANG cookie was not found.")

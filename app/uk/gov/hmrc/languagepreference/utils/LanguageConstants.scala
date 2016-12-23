@@ -20,7 +20,7 @@ import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.{TimeZone, ULocale}
 import org.joda.time.{DateTime, LocalDate}
 import play.api.Play._
-import play.api.{Application, Play}
+import play.api.{Logger, Application, Play}
 import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -43,11 +43,19 @@ object LanguageConstants  extends ServicesConfig{
   val EngLangCode = getString("engLangCode")
   val WelshLangCode   = getString("welshLangCode")
 
-  def setCookie(code:String) = Cookie(hmrcLang, //name
-    code , //value
-    None, //maxAge
-    "/", //path
-    None, //domain: Option[String]
-    true,     //secure:  Boolean = false
-    true ) //httpOnly: Boolean = true
+  def createLangHeader(cookie:Cookie) = hmrcLang -> Cookies.encodeSetCookieHeader(Seq(cookie))
+
+  def createCookie(code:String) =
+    {
+      Logger.debug("lang being set" + hmrcLang + "code is " + code)
+      Cookie(hmrcLang, //name
+        code , //value
+        None, //maxAge
+        "/", //path
+        Some("localhost"), //domain: Option[String]
+        false,     //secure:  Boolean = false
+        true
+      ) //httpOnly: Boolean = true
+
+    }
 }
