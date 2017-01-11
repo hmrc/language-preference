@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package uk.gov.hmrc.languagepreference.utils
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.{TimeZone, ULocale}
 import org.joda.time.{DateTime, LocalDate}
-import play.api.Play
+import play.api.{Logger, Play}
 import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
 import play.api.mvc._
 
@@ -37,7 +37,7 @@ object LanguageConstants  {
 
   val hmrcLang = "HMRC_LANG"
   val EngLangCode = "en-GB"
-  val WelshLangCode   = "cy-GB"
+  val WelshLangCode   = "cy"
 
   def setCookie(code:String) = Cookie(hmrcLang, //name
     code , //value
@@ -46,4 +46,21 @@ object LanguageConstants  {
     None, //domain: Option[String]
     false,     //secure:  Boolean = false
     true ) //httpOnly: Boolean = true
+
+  def createLangHeader(cookie:Cookie) = hmrcLang -> Cookies.encodeSetCookieHeader(Seq(cookie))
+
+  def createCookie(code:String) =
+  {
+    Logger.debug("lang being set" + hmrcLang + "code is " + code)
+//    Cookie(hmrcLang, //name
+//      code , //value
+//      None, //maxAge
+//      "/", //path
+//      Some("localhost"), //domain: Option[String]
+//      false,     //secure:  Boolean = false
+//      true
+//    ) //httpOnly: Boolean = true
+
+    Cookie(hmrcLang,code,None,"/",None,false,false)
+  }
 }

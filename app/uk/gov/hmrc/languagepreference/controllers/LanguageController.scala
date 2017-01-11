@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.languagepreference.controllers
 
+import play.api.Logger
 import play.api.mvc._
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -37,28 +38,36 @@ trait LanguageController extends FrontendController with ServicesConfig {
 
   def getPartial() = Action { implicit request =>
     val englishSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(EngLangCode).url
-    val  welshSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(WelshLangCode).url
-    Ok(uk.gov.hmrc.languagepreference.views.html.language_selection( welshSwitchUrl, englishSwitchUrl))
+    val welshSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(WelshLangCode).url
+    Ok(uk.gov.hmrc.languagepreference.views.html.language_selection(welshSwitchUrl, englishSwitchUrl))
   }
 
   def getLang = Action {
-    implicit  request =>
-    // option 1
-    request.cookies.get(hmrcLang) match
-      {
-        case Some(cookie:Cookie) => Ok(cookie.value)
+    implicit request =>
+      Logger.info("The cookie is " +request.cookies.get(hmrcLang) )
+      request.cookies.get(hmrcLang) match {
+        case Some(cookie: Cookie) => Ok(cookie.value)
         //failure condition ??
         case _ => Ok(EngLangCode).withCookies(setCookie(EngLangCode))
       }
   }
 
-  def setLang(langToSet:String) = Action {
-            // option 1
-    val cookie = langToSet match {
-      case WelshLangCode => setCookie(langToSet)
-      case _ => setCookie(EngLangCode)
+  def setLang(langToSet: String) = Action {
+    implicit request =>
+      // option 1
+      langToSet match {
+        case WelshLangCode => redirectToReferrer(langToSet)
+        case _ => redirectToReferrer(langToSet)
+      }
+  }
+
+  def redirectToReferrer(langToSet: String)(implicit request: Request[AnyContent]) = {
+    val referrer = request.headers.get(REFERER)
+    val cookie = setCookie(langToSet)
+    referrer match {
+      case Some(_) => Redirect(referrer.get).withCookies (cookie)
+      case None => throw new Exception("No Referer Identified")
     }
-        Ok(cookie.value).withCookies(cookie)
   }
 }
 
