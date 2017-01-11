@@ -27,9 +27,6 @@ import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
 
 class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunners with ScalaFutures with DefaultAwaitTimeout with IntegrationPatience with OneAppPerSuite {
 
-  private val refererValue  = "http://gov.uk"
-  private val fallbackValue = "http://gov.uk/fallback"
-
   val mockLanguageController = new LanguageController {
   }
 

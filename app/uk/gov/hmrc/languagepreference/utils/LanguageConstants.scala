@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import play.api.{Logger, Application, Play}
 import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 /** This object provides access to common language utilities.
   *
@@ -58,4 +59,8 @@ object LanguageConstants  extends ServicesConfig{
       ) //httpOnly: Boolean = true
 
     }
+
+  def createHeaderCarrier(headerCarrier: HeaderCarrier, cookie: Cookie): HeaderCarrier = {
+    headerCarrier.withExtraHeaders(createLangHeader(cookie))
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,21 +43,28 @@ class LanguageController extends FrontendController with ServicesConfig {
     val  welshSwitchUrl = baseUrl(baseurl) + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(WelshLangCode).url
     Logger.debug("Partial created + host are " + request.host)
 
-    Ok(uk.gov.hmrc.languagepreference.views.html.language_selection( englishSwitchUrl,welshSwitchUrl)).withCookies(createCookie(EngLangCode))
+    Ok(uk.gov.hmrc.languagepreference.views.html.language_selection( englishSwitchUrl,welshSwitchUrl))
   }
 
   def getLang() = Action {
     implicit  request =>
-    // option 1
-      Logger.debug("method invoked" + request.host)
 
-    request.cookies.get(hmrcLang) match
+    // option 1
+      Logger.debug("************** DEBUG INFO  START ******************  ")
+      Logger.debug("host :  " + request.host)
+      Logger.debug("hc.headers:  " + hc.headers)
+      Logger.debug("hc.headers:  " + hc.otherHeaders)
+      Logger.debug("request.headers  :  " + request.headers.headers)
+      Logger.debug("request.session  :  " + request.session)
+      Logger.debug("hc.extraHeaders :  " + hc.extraHeaders)
+      Logger.debug("************** DEBUG INFO END ******************  ")
+    request.session.get(hmrcLang) match
       {
-        case Some(cookie:Cookie) =>  Ok(cookie.value)
+        case Some(cookie:String) =>  Ok(cookie)
         //failure condition ??
-        case _ => { Logger.debug("default case " + request.cookies.get(hmrcLang))
+        case _ => { Logger.debug("default case " + request.session.get(hmrcLang))
           val cookie = createCookie(EngLangCode)
-          Ok(EngLangCode).withHeaders(createLangHeader(cookie))withCookies(cookie) }
+          Ok(EngLangCode).withSession(createLangHeader(cookie)) }
       }
   }
 
@@ -74,7 +81,9 @@ class LanguageController extends FrontendController with ServicesConfig {
     val referrer = request.headers.get(REFERER)
     val cookie = createCookie(langToSet)
     referrer match {
-      case Some(_) => Redirect(referrer.get).withHeaders(createLangHeader(cookie))withCookies(cookie)
+      case Some(_) => {
+        Redirect(referrer.get).withSession(createLangHeader(cookie))//.withCookies(cookie)
+       }
       case None => throw new Exception("No Referer Identified")
     }
 
