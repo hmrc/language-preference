@@ -26,8 +26,9 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 trait LanguageController extends FrontendController with ServicesConfig with RunMode {
 
 
-  // Could be expanded later, to allow language preference
-  // to be retrieved from a persistant store.
+  // Could be iterated later, to allow language preference
+  // to be retrieved from a persistant store (preferences?).
+  // For now, this just offers a default language
   def getLang() = Action { implicit request =>
     Ok("en-GB")
   }
