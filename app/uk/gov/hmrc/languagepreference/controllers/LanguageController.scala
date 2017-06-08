@@ -38,7 +38,7 @@ trait LanguageController extends FrontendController with ServicesConfig with Run
     Redirect(sanitisedUrl(url)).withCookies(cookie(langToSet))
   }
 
-  //Prevent spoofing from external (phishing) host.
+  //Prevent spoofing from external (phishing?) host.
   private def sanitisedUrl(url: String): String = {
     if((env == Mode.Prod.toString) && url.startsWith("http")){"/"}
     else url
