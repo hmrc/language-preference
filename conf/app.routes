@@ -1,5 +1,5 @@
 # microservice specific routes
 
 
-GET        /setlang/:lang/:url      uk.gov.hmrc.languagepreference.controllers.LanguageController.setLang(lang:String, url: String)
-GET        /getlang                 uk.gov.hmrc.languagepreference.controllers.LanguageController.getLang()
+GET        /setlang/:lang/:url      @uk.gov.hmrc.languagepreference.controllers.LanguageController.setLang(lang:String, url: String)
+GET        /getlang                 @uk.gov.hmrc.languagepreference.controllers.LanguageController.getLang()

@@ -16,26 +16,31 @@
 
 package uk.gov.hmrc.languagepreference.controllers
 
+import javax.inject.{Inject, Singleton}
+
 import play.api.Mode
+import play.api.i18n.Lang
 import play.api.mvc._
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
 import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import play.api.i18n.{I18nSupport, Lang, MessagesApi}
 
 
-trait LanguageController extends FrontendController with ServicesConfig with RunMode {
+@Singleton
+class LanguageController @Inject()(val messagesApi: MessagesApi)extends FrontendController with ServicesConfig with RunMode with I18nSupport{
 
 
-  // Could be iterated later, to allow language preference
-  // to be retrieved from a persistant store (preferences?).
-  // For now, this just offers a default language
-  def getLang() = Action { implicit request =>
+  /** Could be iterated later, to allow language preference
+   to be retrieved from a persistant store (preferences?).
+   For now, this just offers a default language **/
+  def getLang = Action { implicit request =>
     Ok("en-GB")
   }
 
 
   def setLang(langToSet:String, url:String) = Action { implicit request =>
-    Redirect(sanitisedUrl(url)).withCookies(cookie(langToSet))
+    Redirect(sanitisedUrl(url)).withCookies(cookie(langToSet)).withLang(Lang(langToSet))
   }
 
   //Prevent spoofing from external (phishing?) host.
@@ -51,4 +56,3 @@ trait LanguageController extends FrontendController with ServicesConfig with Run
 }
 
 
-object LanguageController extends LanguageController
