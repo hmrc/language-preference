@@ -39,11 +39,12 @@ object LanguageConstants  {
   val EngLangCode = "en-GB"
   val WelshLangCode   = "cy-GB"
 
-  def langCookie(code:String) = Cookie(hmrcLang, //name
-    code , //value
-    None, //maxAge
-    "/", //path
-    None, //domain: Option[String]
-    false,     //secure:  Boolean = false
-    true ) //httpOnly: Boolean = true
+  def langCookie(code:String) = Cookie(
+    hmrcLang, //name
+    code ,    // value
+    None,     // maxAge
+    "/",      // path
+    None,     // domain: Option[String]
+    false,    // secure:  Boolean = false
+    true )    // httpOnly: Boolean = true
 }

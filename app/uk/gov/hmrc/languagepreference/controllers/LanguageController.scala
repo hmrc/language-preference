@@ -19,7 +19,6 @@ package uk.gov.hmrc.languagepreference.controllers
 import javax.inject.{Inject, Singleton}
 
 import play.api.Mode
-import play.api.i18n.Lang
 import play.api.mvc._
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
 import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}

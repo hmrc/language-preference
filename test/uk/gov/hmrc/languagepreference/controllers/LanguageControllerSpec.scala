@@ -21,23 +21,28 @@ import java.net.URLEncoder
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{ShouldMatchers, WordSpec}
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.Mode
+import play.api.i18n.MessagesApi
 import play.api.mvc.Cookie
 import play.api.test._
 import play.api.test.Helpers._
-import play.test.{WithApplication, WithServer}
+import play.test.WithServer
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
+import org.scalatest.mock.MockitoSugar
 
-class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunners with ScalaFutures with DefaultAwaitTimeout with IntegrationPatience with OneAppPerSuite {
+
+class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunners with ScalaFutures with
+                                     DefaultAwaitTimeout with IntegrationPatience with OneAppPerSuite with
+                                     MockitoSugar {
 
   private val refererValue  = "http://gov.uk"
   private val fallbackValue = "http://gov.uk/fallback"
 
-  val mockLanguageController = new LanguageController {
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  val mockLanguageController = new LanguageController(messagesApi) {
     override lazy val env = "Prod"
   }
 
-  abstract class ServerWithConfig(conf: Map[String, String] = Map.empty) extends WithServer()
+//  abstract class ServerWithConfig(conf: Map[String, String] = Map.empty) extends WithServer()
 
   "The languageController endpoint " should {
 
@@ -50,7 +55,6 @@ class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunne
 
 
     "set the hmrc language cookie to Welsh and forward to specified page when language is set to Welsh" in {
-
       val returnUrl = "/personal-account"
       val result = mockLanguageController.setLang("cy-GB", returnUrl).apply(FakeRequest())
       status(result) should be(SEE_OTHER)
