@@ -42,8 +42,6 @@ class LanguageControllerSpec extends WordSpec with ShouldMatchers with PlayRunne
     override lazy val env = "Prod"
   }
 
-//  abstract class ServerWithConfig(conf: Map[String, String] = Map.empty) extends WithServer()
-
   "The languageController endpoint " should {
 
     "when get language is invoked, it should always return English (for now)" in {
