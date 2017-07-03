@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,50 +16,42 @@
 
 package uk.gov.hmrc.languagepreference.controllers
 
+import javax.inject.{Inject, Singleton}
+
+import play.api.Mode
 import play.api.mvc._
 import uk.gov.hmrc.languagepreference.utils.LanguageConstants._
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-
-/**
-  * LanguageController that switches the language of the current web application.
-  *
-  * This trait provides a means of switching the current language and redirecting the user
-  * back to their original location. It expects a fallbackURL to be defined when implemented.
-  * It also expects a languageMap to be defined, this provides a way of mapping strings to Lang objects.
-  *
-  */
-
-trait LanguageController extends FrontendController with ServicesConfig {
+import play.api.i18n.{I18nSupport, Lang, MessagesApi}
 
 
-  def getPartial() = Action { implicit request =>
-    val englishSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(EngLangCode).url
-    val  welshSwitchUrl = baseUrl("language-preference") + uk.gov.hmrc.languagepreference.controllers.routes.LanguageController.setLang(WelshLangCode).url
-    Ok(uk.gov.hmrc.languagepreference.views.html.language_selection( welshSwitchUrl, englishSwitchUrl))
+@Singleton
+class LanguageController @Inject()(val messagesApi: MessagesApi)extends FrontendController with ServicesConfig with RunMode with I18nSupport{
+
+
+  /** Could be iterated later, to allow language preference
+   to be retrieved from a persistant store (preferences?).
+   For now, this just offers a default language **/
+  def getLang = Action { implicit request =>
+    Ok("en-GB")
   }
 
-  def getLang = Action {
-    implicit  request =>
-    // option 1
-    request.cookies.get(hmrcLang) match
-      {
-        case Some(cookie:Cookie) => Ok(cookie.value)
-        //failure condition ??
-        case _ => Ok(EngLangCode).withCookies(setCookie(EngLangCode))
-      }
+
+  def setLang(langToSet:String, url:String) = Action { implicit request =>
+    Redirect(sanitisedUrl(url)).withCookies(cookie(langToSet)).withLang(Lang(langToSet))
   }
 
-  def setLang(langToSet:String) = Action {
-            // option 1
-    val cookie = langToSet match {
-      case WelshLangCode => setCookie(langToSet)
-      case _ => setCookie(EngLangCode)
-    }
-        Ok(cookie.value).withCookies(cookie)
+  //Prevent spoofing from external (phishing?) host.
+  private def sanitisedUrl(url: String): String = {
+    if((env == Mode.Prod.toString) && url.startsWith("http")){"/"}
+    else url
+  }
+
+  private def cookie(langToSet: String) = {
+    if(langToSet == WelshLangCode) {langCookie(WelshLangCode)}
+    else {langCookie(EngLangCode)}
   }
 }
 
-object LanguageController extends LanguageController
+
